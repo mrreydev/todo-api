@@ -26,9 +26,17 @@ class TodoController extends Controller
      * * Get List Todo
      */
     public function index(Request $request) {
-        $todos = Todo::with('tasks')
-            ->where('user_id', Auth::user()->id)
-            ->paginate(10);
+        $params = $request->all();
+        
+        $todos = Todo::query()
+                ->where('user_id', Auth::user()->id)
+                ->when($params && array_key_exists('search',$params), function($query) use ($params) {
+                    return $query->where('name', 'like', '%'.$params['search'].'%');
+                })
+                ->when($params && array_key_exists('important',$params), function($query) use ($params) {
+                    return $query->where('important', true);
+                })
+                ->paginate(10);
 
         $response = [
             'status_code' => Response::HTTP_OK,
