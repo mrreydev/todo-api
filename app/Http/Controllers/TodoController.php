@@ -36,7 +36,7 @@ class TodoController extends Controller
                 ->when($params && array_key_exists('important',$params), function($query) use ($params) {
                     return $query->where('important', true);
                 })
-                ->paginate(10);
+                ->paginate();
 
         $response = [
             'status_code' => Response::HTTP_OK,
